@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import SortableHeader from './sortable-header';
+import { deleteProject } from './actions';
 
 interface Props {
     searchParams?: {
@@ -28,22 +29,21 @@ export default async function ProjectListPage({ searchParams }: Props) {
                     <thead>
                         <tr>
                             <SortableHeader
-                                title="Project Name"
                                 column="name"
                                 currentSort={sortBy}
                                 currentOrder={order}
                             />
                             <SortableHeader
-                                title="Created At"
                                 column="createdAt"
                                 currentSort={sortBy}
                                 currentOrder={order}
                             />
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {projects.map((project) => (
-                            <tr key={project.id}>
+                            <tr key={project.id} className='border-gray-200'>
                                 <td className="border px-4 py-2">
                                     <Link href={`/dashboard/projects/${project.id}`}>
                                         {project.name}
@@ -51,6 +51,17 @@ export default async function ProjectListPage({ searchParams }: Props) {
                                 </td>
                                 <td className="border px-4 py-2">
                                     {format(new Date(project.createdAt), 'PPP')}
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <form action={deleteProject}>
+                                        <input type="hidden" name="id" value={project.id}/>
+                                        <button
+                                            type="submit"
+                                            className="text-red-500 hover:text-red-700 ml-4"
+                                            title="Delete Project"
+                                            
+                                        >Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         ))}
