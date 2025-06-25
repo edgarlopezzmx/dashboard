@@ -14,21 +14,21 @@ export async function POST(
             { status: 400 }
         );
     }
-
-    let body: { type: string; payload: any };
     
+    let raw: unknown;
     try {
-        body = await req.json();
+        raw = await req.json();
     } catch (error) {
+        console.error('Webhook error:', error);
         return NextResponse.json(
             { error: "Invalid JSON" },
             { status: 400 }
         );
     }
 
-    const { type, payload } = body;
+    const body = raw as { type: string; payload: unknown };
 
-    if (!type || !payload) {
+    if (!body.type || !body.payload) {
         return NextResponse.json(
             { error: "Type and payload are required" },
             { status: 400 }
@@ -39,14 +39,13 @@ export async function POST(
         const event = await prisma.event.create({
             data: {
                 projectId,
-                type,
-                payload,
+                type: body.type,
+                payload: body.payload,
                 // payload: JSON.stringify(payload),
             },
         });
 
         revalidatePath(`/dashboard/projects/${projectId}`);
-
         return NextResponse.json(event, { status: 201 });
     } catch (error) {
         console.error("Error creating event:", error);
