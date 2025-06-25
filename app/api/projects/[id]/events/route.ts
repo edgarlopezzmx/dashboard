@@ -3,9 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function POST(
-    req: Request
+    request: Request,
+    { params } : { params: Promise<{ id: string }> }
 ) {
-    const {id} = await req.json();
+    const { id } = await params;
 
     if (!id) {
         return NextResponse.json(
@@ -16,7 +17,7 @@ export async function POST(
     
     let raw: unknown;
     try {
-        raw = await req.json();
+        raw = await request.json();
         console.log('Webhook received:', raw);
     } catch (error) {
         console.error('Webhook error:', error);
@@ -41,7 +42,6 @@ export async function POST(
                 projectId: id,
                 type: body.type,
                 payload: body.payload,
-                // payload: JSON.stringify(payload),
             },
         });
 
