@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } }
 ) {
-    const projectId = params.id;
+    const projectId = context.params.id;
 
     if (!projectId) {
         return NextResponse.json(
