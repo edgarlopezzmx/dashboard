@@ -14,7 +14,7 @@ export async function deleteProject(formData: FormData) {
         revalidatePath('/dashboard/projects');
     } catch (error) {
         console.error('Error deleting project:', error);
-        throw error;
-        // throw new Error('Failed to delete project');
+        // throw error;
+        throw new Error('Failed to delete project');
     }
 }

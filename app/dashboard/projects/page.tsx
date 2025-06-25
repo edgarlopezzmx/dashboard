@@ -4,15 +4,13 @@ import { format } from 'date-fns';
 import SortableHeader from './sortable-header';
 import { deleteProject } from './actions';
 
-interface PageProps {
-    searchParams?: { page?: string; sortBy?: string; order?: string };
-}
-
-export default async function ProjectListPage({ searchParams }: PageProps) {
-    // const { searchParams } = props;
-    
-    const sortBy = searchParams?.sortBy ?? 'createdAt';
-    const order = searchParams?.order ?? 'desc';
+export default async function ProjectListPage({
+    searchParams
+}:{
+    searchParams: Promise< {sortBy?: string; order?: string;} >;
+}) {
+    const {sortBy = "createdAt"} = await searchParams;
+    const {order = "desc"} = await searchParams;
 
     const projects = await prisma.project.findMany({
         orderBy: {
