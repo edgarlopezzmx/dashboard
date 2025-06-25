@@ -4,9 +4,12 @@ import { format } from 'date-fns';
 import SortableHeader from './sortable-header';
 import { deleteProject } from './actions';
 
+interface PageProps {
+    searchParams?: { page?: string; sortBy?: string; order?: string };
+}
 
-export default async function ProjectListPage(props: any) {
-    const { searchParams } = props;
+export default async function ProjectListPage({ searchParams }: PageProps) {
+    // const { searchParams } = props;
     
     const sortBy = searchParams?.sortBy ?? 'createdAt';
     const order = searchParams?.order ?? 'desc';
