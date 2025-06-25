@@ -4,16 +4,9 @@ import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
-interface Props {
-    params: {
-        id: string
-    };
-    searchParams?: {
-        page?: string
-    }
-}
 
-export default async function ProjectDetailPage({ params, searchParams}: Props) {
+export default async function ProjectDetailPage(props: any) {
+    const { params, searchParams } = props;
     const projectId = params.id;
     const page = parseInt(searchParams?.page || '1', 10);
     const pageSize = 10;

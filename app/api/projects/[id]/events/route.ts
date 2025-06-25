@@ -3,12 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function POST(
-    req: NextRequest,
-    context: { params: { id: string } }
+    req: Request
 ) {
-    const projectId = context.params.id;
+    const {id} = await req.json();
 
-    if (!projectId) {
+    if (!id) {
         return NextResponse.json(
             { error: "Project ID is required" },
             { status: 400 }
@@ -18,6 +17,7 @@ export async function POST(
     let raw: unknown;
     try {
         raw = await req.json();
+        console.log('Webhook received:', raw);
     } catch (error) {
         console.error('Webhook error:', error);
         return NextResponse.json(
@@ -38,14 +38,14 @@ export async function POST(
     try {
         const event = await prisma.event.create({
             data: {
-                projectId,
+                projectId: id,
                 type: body.type,
                 payload: body.payload,
                 // payload: JSON.stringify(payload),
             },
         });
 
-        revalidatePath(`/dashboard/projects/${projectId}`);
+        revalidatePath(`/dashboard/projects/${id}`);
         return NextResponse.json(event, { status: 201 });
     } catch (error) {
         console.error("Error creating event:", error);
