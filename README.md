@@ -1,14 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Saas Dashboard - Next.js 15
+This project is a small but realistic Saas-style dashboard built using Netx.js 15 with the App Router, Server Components and Server Actions. It displays a list of Projects and the Events they receive through a weebhook endpoint.
 
-## Getting Started
+## 🚀 Live Demo
+
+[https://dashboard-810r14a3o-edgar-lopezs-projects-cab8ccf4.vercel.app](dashboard-810r14a3o-edgar-lopezs-projects-cab8ccf4.vercel.app)
+
+
+## Quick Start
 
 First, run the development server:
 
 ```bash
+pnpm install
+pnpm db:generate
+pnpm db:seed
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then visit [http://localhost:3000/dashboard/projects](http://localhost:3000/dashboard/projects)
 
 
 ## Setup database
@@ -17,7 +26,7 @@ Create the **.env** file, You can execute
 ```bash
 cat .env.example > .env
 ```
-execute the generator of the database
+Execute the generator of the database
 ```bash
 pnpx prisma migrate dev --name init
 pnpx prisma generate
@@ -28,10 +37,96 @@ run the seeder
 pnpm db:seed
 ```
 
+## Architecture Notes
+
+* Routing: App Router (App/), using Server Components only
+* Data Layer: Prisma ORM + SQLite for simplicity and local speed
+* UI: TailwindCSS + semantic HTML for minimal, clean styling
+* State& Actions: Form submissions use Server Action only (no client state)
+* Revalidation: Revalidates project and event pages after create/delete/event
+* Error Handling: Includes optimistic UI, 400/500 HTTP handling in APIs
 
 
-## Deploy on Vercel
+## Data Models
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+``` prisma
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  events      Event[]
+}
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+model Event {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  type      String
+  payload   Json
+  createdAt DateTime @default(now())
+}
+```
+
+## Pages & Features
+
+```table
+Route                                   Description
+/dashboard/projects                     List all projects
+/dashboard/create                       Create a new project (Server Action)
+/dashboard/projects/[id]                View project details + events
+POST /api/projects/[id]/events          Webhook to log event for a project
+```
+
+## Webhook Testing
+
+**Endpoint**
+```
+POST /api/projects/<projectId>/events
+Content-Type: application/json
+```
+**Body Example**
+```
+{
+  "type": "order.created",
+  "payload": {
+    "orderId": "A1B2C3",
+    "amount": 49.99
+  }
+}
+```
+
+**cURL example**
+```
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "order.created",
+    "payload": { "orderId": "A1B2C3", "amount": 49.99 }
+  }' \
+  https://dashboard-ochre-phi.vercel.app/api/projects/cmccgpct30002jp042ik5v9hg/events
+```
+
+## Seeding Data
+use the following command to generate 3 project with 20 events:
+```
+pnpm db:seed
+```
+
+## Environment Variables
+Create a .env file based on the following template:
+
+```
+#SQLite
+DATABASE_URL="file:./dev.db"
+
+#PostgreSQL
+DATABASE_URL="postgresql://<user>:<password>@<host>/<db>?sslmode=require"
+```
+
+## Deployment
+This project is deployed on Vercel. It uses:
+* pnpm install
+* pnpm db:generate
+* prisma migrate deploy
+* pnpm db:seed
