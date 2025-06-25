@@ -3,7 +3,7 @@ This project is a small but realistic Saas-style dashboard built using Netx.js 1
 
 ## 🚀 Live Demo
 
-[https://dashboard-810r14a3o-edgar-lopezs-projects-cab8ccf4.vercel.app](dashboard-810r14a3o-edgar-lopezs-projects-cab8ccf4.vercel.app)
+[https://dashboard-ochre-phi.vercel.app](dashboard-ochre-phi.vercel.app)
 
 
 ## Quick Start
