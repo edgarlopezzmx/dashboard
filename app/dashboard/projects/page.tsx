@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import SortableHeader from './sortable-header';
 import { deleteProject } from './actions';
 import { getProjects } from '@/lib/data/project';
+import { Paginator } from '@/components/paginator';
 
 export default async function ProjectListPage({
     searchParams
@@ -63,7 +64,7 @@ export default async function ProjectListPage({
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody className='mb-4'>
+                    <tbody>
                         {projects.map((project) => (
                             <tr key={project.id} className='border-gray-200'>
                                 <td className="border px-4 py-2">
@@ -88,23 +89,17 @@ export default async function ProjectListPage({
                             </tr>
                         ))}
                     </tbody>
-                    <tfoot className='mb-4'>
-                        <tr className='mb-4'>
+                    <tfoot>
+                        <tr>
                             <td colSpan={3} className="text-center">
-                            {pageNumber > 1 && (
-                                <Link
-                                    href={`/dashboard/projects?page=${pageNumber - 1}&sortBy=${sortBy}&order=${order}&query=${query}`}
-                                    className="px-3 py-1 my-2 border rounded text-blue-500 hover:bg-gray-100"
-                                >
-                                    Previous
-                                </Link>
-                            )}
-                            <Link 
-                                href={`/dashboard/projects?page=${pageNumber + 1}&sortBy=${sortBy}&order=${order}&query=${query}`}
-                                className="px-3 py-1 my-2 border rounded text-blue-500 hover:bg-gray-100 ml-2"
-                            >
-                                Next
-                            </Link>
+                                <Paginator
+                                    page={pageNumber}
+                                    totalPages={totalPages}
+                                    query={query}
+                                    baseUrl="/dashboard/projects"
+                                    sortBy={sortBy}
+                                    order={order}
+                                />
                             </td>
                         </tr>
                     </tfoot>
