@@ -11,7 +11,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:deploy": "prisma migrate deploy",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "seed:1000": "tsx prisma/seed2.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",

@@ -42,6 +42,12 @@ async function main() {
     console.log('Seeding completed.');
 }
 
+const alreadySeeded = await prisma.project.count();
+if (alreadySeeded >= 1000) {
+    console.log('Database already seeded with projects. Exiting...');
+    process.exit(0);
+}
+
 main()
     .catch((e) => {
         console.error('Error during seeding:', e);

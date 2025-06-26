@@ -25,5 +25,19 @@ export async function getProjects({
         take: pageSize,
     });
 
-    return projects;
+    const totalProjects = await prisma.project.count({
+        where: {
+            name: {
+                contains: query,
+            },
+        },
+    });
+
+    const totalPages = Math.ceil(totalProjects / pageSize);
+
+    return {
+        projects,
+        totalProjects,
+        totalPages,
+    };
 }

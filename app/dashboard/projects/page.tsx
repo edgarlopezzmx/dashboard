@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import SortableHeader from './sortable-header';
@@ -16,7 +15,7 @@ export default async function ProjectListPage({
     const {page = "1"} = await searchParams;
     const pageNumber = parseInt(page, 10);
 
-    const projects = await getProjects({
+    const {projects, totalProjects, totalPages} = await getProjects({
         sortBy,
         order,
         query,
@@ -64,7 +63,7 @@ export default async function ProjectListPage({
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='mb-4'>
                         {projects.map((project) => (
                             <tr key={project.id} className='border-gray-200'>
                                 <td className="border px-4 py-2">
@@ -89,18 +88,21 @@ export default async function ProjectListPage({
                             </tr>
                         ))}
                     </tbody>
-                    <tfoot>
-                        <tr>
+                    <tfoot className='mb-4'>
+                        <tr className='mb-4'>
                             <td colSpan={3} className="text-center">
                             {pageNumber > 1 && (
                                 <Link
                                     href={`/dashboard/projects?page=${pageNumber - 1}&sortBy=${sortBy}&order=${order}&query=${query}`}
-                                    className="text-blue-500 hover:text-blue-700"
+                                    className="px-3 py-1 my-2 border rounded text-blue-500 hover:bg-gray-100"
                                 >
                                     Previous
                                 </Link>
                             )}
-                            <Link href={`/dashboard/projects?page=${pageNumber + 1}&sortBy=${sortBy}&order=${order}&query=${query}`}>
+                            <Link 
+                                href={`/dashboard/projects?page=${pageNumber + 1}&sortBy=${sortBy}&order=${order}&query=${query}`}
+                                className="px-3 py-1 my-2 border rounded text-blue-500 hover:bg-gray-100 ml-2"
+                            >
                                 Next
                             </Link>
                             </td>
