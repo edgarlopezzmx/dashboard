@@ -16,7 +16,7 @@ export default async function ProjectListPage({
     const {page = "1"} = await searchParams;
     const pageNumber = parseInt(page, 10);
 
-    const {projects, totalProjects, totalPages} = await getProjects({
+    const {projects, totalPages} = await getProjects({
         sortBy,
         order,
         query,
