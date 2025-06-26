@@ -3,19 +3,24 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import SortableHeader from './sortable-header';
 import { deleteProject } from './actions';
+import { getProjects } from '@/lib/data/project';
 
 export default async function ProjectListPage({
     searchParams
 }:{
-    searchParams: Promise< {sortBy?: string; order?: string;} >;
+    searchParams: Promise< {sortBy?: string; order?: string; query?: string; page?: string} >;
 }) {
-    const {sortBy = "createdAt"} = await searchParams;
-    const {order = "desc"} = await searchParams;
+    const {sortBy = "createdAt" } = await searchParams;
+    const {order = "desc" } = await searchParams;
+    const {query = "" } = await searchParams;
+    const {page = "1"} = await searchParams;
+    const pageNumber = parseInt(page, 10);
 
-    const projects = await prisma.project.findMany({
-        orderBy: {
-            [sortBy]: order,
-        },
+    const projects = await getProjects({
+        sortBy,
+        order,
+        query,
+        page: pageNumber,
     });
 
     return (
@@ -25,6 +30,22 @@ export default async function ProjectListPage({
                 <Link href="/dashboard/create" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Create New Project
                 </Link>
+            </div>
+            <div className='mb-4'>
+                <form method='GET'>
+                    <input
+                        type="text"
+                        name="query"
+                        placeholder="Search projects..."
+                        className="border border-gray-300 rounded px-4 py-2 w-full"
+                        defaultValue={query}
+                    />
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2"
+                        type="submit"
+                    >Search
+                    </button>
+                </form>
             </div>
             <div className='overflow-x-auto'>
                 <table className="min-w-full bg-white">
@@ -68,6 +89,23 @@ export default async function ProjectListPage({
                             </tr>
                         ))}
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colSpan={3} className="text-center">
+                            {pageNumber > 1 && (
+                                <Link
+                                    href={`/dashboard/projects?page=${pageNumber - 1}&sortBy=${sortBy}&order=${order}&query=${query}`}
+                                    className="text-blue-500 hover:text-blue-700"
+                                >
+                                    Previous
+                                </Link>
+                            )}
+                            <Link href={`/dashboard/projects?page=${pageNumber + 1}&sortBy=${sortBy}&order=${order}&query=${query}`}>
+                                Next
+                            </Link>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
