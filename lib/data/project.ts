@@ -16,6 +16,7 @@ export async function getProjects({
         where: {
             name: {
                 contains: query,
+                mode: 'insensitive', // Case-insensitive search
             },
         },
         orderBy: {
