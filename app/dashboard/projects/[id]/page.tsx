@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Paginator } from '@/components/paginator';
+import { getEvents } from '@/lib/data/events';
 
 export default async function ProjectDetailPage({
     params,
@@ -28,18 +29,13 @@ export default async function ProjectDetailPage({
         notFound();
     }
 
-    const [events, totalEvents] = await Promise.all([
-        prisma.event.findMany({
-            where: { projectId: id },
-            orderBy: { createdAt: 'desc' },
-            skip,
-            take: pageSize,
-        }),
-        prisma.event.count({
-            where: { projectId: id }
-        }),
-    ]);
-    const totalPages = Math.ceil(totalEvents / pageSize);
+    const {events, totalPages}  = await getEvents({
+        projectId: id,
+        sortBy: 'createdAt',
+        order: 'desc',
+        query: '',
+        page: pageNumber,
+    });
 
     return (
         <div className="p-6 space-y-4">
