@@ -16,10 +16,7 @@ export default async function ProjectDetailPage({
     const { id } = await params;
     const { page = '1' } =  await searchParams || {};
     const pageNumber = parseInt(page, 10);
-    const baseUrl = `/dashboard/projects/${id}`;
-    
-    const pageSize = 10;
-    const skip = (parseInt(page, 10) - 1) * pageSize;
+    const baseUrl = `/dashboard/projects/${id}`;    
     
     const project = await prisma.project.findUnique({
         where: { id: id },
