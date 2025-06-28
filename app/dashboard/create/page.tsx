@@ -2,14 +2,17 @@
 
 import { useActionState } from "react";
 import { createProject } from "./actions";
+import { FormState } from "@/lib/types";
 
-const initialState = {
-    status: '',
-    errors: '',
+
+const initialState : FormState = {
+    status: 'idle',
+    message: '',
+    errors:{},
 };
 
 export default function CreateProjectPage() {
-    const [state, formAction, pending] = useActionState(createProject, initialState)
+    const [state, formAction, pending] = useActionState<FormData, FormState>(createProject, initialState)
 
     return (
         <div className="container mx-auto p-4">
