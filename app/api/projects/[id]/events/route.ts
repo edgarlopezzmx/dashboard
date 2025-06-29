@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { eventSchema } from "@/lib/validations/eventSchema";
 
@@ -51,13 +52,12 @@ export async function POST(
 
     const { type, payload } = parsed.data;
 
-
     try {
         const event = await prisma.event.create({
             data: {
                 projectId: id,
                 type: type,
-                payload: payload,
+                payload: payload as Prisma.InputJsonValue,
             },
         });
 

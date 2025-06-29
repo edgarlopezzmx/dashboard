@@ -1,3 +1,4 @@
+// dashboard/app/dashboard/create/actions.ts
 'use server';
 
 import { prisma } from '@/lib/prisma';
@@ -13,7 +14,12 @@ const projectSchema = z.object({
 })
 
 export async function createProject(initialState: FormState, formData: FormData) {
-    const validatedFields = projectSchema.safeParse(formData);
+    const raw = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+    }
+
+    const validatedFields = projectSchema.safeParse(raw);
 
     if (!validatedFields.success) {
         const errors = extractZodErrors(validatedFields.error);
@@ -27,13 +33,14 @@ export async function createProject(initialState: FormState, formData: FormData)
 
     const { name, description } = validatedFields.data;
 
-    if (!name || !description) {
-        throw new Error('Name and description are required');
-    }
-
     const project = await prisma.project.create({ data: { name, description } });
 
     revalidatePath('/dashboard/projects');
-    console.log('Project created successfully:', project);
     redirect(`/dashboard/projects/${project.id}`);
+
+    return {
+        status: 'success',
+        message: 'Project created successfully',
+        errors: {},
+    };
 }

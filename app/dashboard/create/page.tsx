@@ -1,3 +1,4 @@
+// dashboard/app/dashboard/create/page.tsx
 'use client';
 
 import { useActionState } from "react";
@@ -12,7 +13,7 @@ const initialState : FormState = {
 };
 
 export default function CreateProjectPage() {
-    const [state, formAction, pending] = useActionState<FormData, FormState>(createProject, initialState)
+    const [state, formAction, pending] = useActionState<FormState, FormData>(createProject, initialState);
 
     return (
         <div className="container mx-auto p-4">

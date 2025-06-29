@@ -2,6 +2,6 @@
 
 export type FormState = {
     status: 'idle' | 'success' | 'error',
-    message?: string,
-    errors?: Record<string, string>,
+    message: string,
+    errors: Record<string, string>,
 }
