@@ -13,7 +13,9 @@ const projectSchema = z.object({
     description: z.string().trim().min(1, 'Description is required'),
 })
 
-export async function createProject(initialState: FormState, formData: FormData) {
+export async function createProject(initialState: FormState, formData: FormData
+
+): Promise<FormState>{
     const raw = {
         name: formData.get('name'),
         description: formData.get('description'),
@@ -28,7 +30,7 @@ export async function createProject(initialState: FormState, formData: FormData)
             status: 'error',
             message: 'Validation failed',
             errors,
-        }
+        } as const;
     }
 
     const { name, description } = validatedFields.data;
@@ -42,5 +44,5 @@ export async function createProject(initialState: FormState, formData: FormData)
         status: 'success',
         message: 'Project created successfully',
         errors: {},
-    };
+    } as const;
 }
