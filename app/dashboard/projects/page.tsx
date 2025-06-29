@@ -4,23 +4,37 @@ import SortableHeader from './sortable-header';
 import { deleteProject } from './actions';
 import { getProjects } from '@/lib/data/project';
 import { Paginator } from '@/components/paginator';
+import { projectQuerySchema } from '@/lib/validations/query';
 
 export default async function ProjectListPage({
     searchParams
 }:{
     searchParams: Promise< {sortBy?: string; order?: string; query?: string; page?: string} >;
 }) {
-    const {sortBy = "createdAt" } = await searchParams;
-    const {order = "desc" } = await searchParams;
-    const {query = "" } = await searchParams;
-    const {page = "1"} = await searchParams;
-    const pageNumber = parseInt(page, 10);
+    const parseSearchParams = projectQuerySchema.safeParse(await searchParams);
+
+    if (!parseSearchParams.success) {
+        console.error("Invalid search parameters:", parseSearchParams.error);
+        return (
+            <div className="container mx-auto p-4">
+                <h1 className="text-2xl font-bold mb-4">Invalid Search Parameters</h1>
+                <p className="text-red-500">Please check your search parameters and try again.</p>
+            </div>
+        );
+    }
+
+    const {
+        sortBy = "createdAt",
+        order = "desc",
+        query = "",
+        page = 1
+    } = parseSearchParams.data;
 
     const {projects, totalPages} = await getProjects({
         sortBy,
         order,
         query,
-        page: pageNumber,
+        page,
     });
 
     return (
@@ -93,7 +107,7 @@ export default async function ProjectListPage({
                         <tr>
                             <td colSpan={3} className="text-center">
                                 <Paginator
-                                    page={pageNumber}
+                                    page={page}
                                     totalPages={totalPages}
                                     query={query}
                                     baseUrl="/dashboard/projects"

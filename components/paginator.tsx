@@ -31,7 +31,8 @@ export function Paginator({
     const pageNumbers = getPageNumbers();
 
     const queryString = (pageNum: number) => `${baseUrl}` +
-        `?query=${encodeURIComponent(query)}&page=${pageNum}` +
+        `?page=${pageNum}` +
+        (query ? `&query=${encodeURIComponent(query)}` : "") +
         (sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : "") +
         (order ? `&order=${encodeURIComponent(order)}` : "")
         ;
@@ -41,8 +42,12 @@ export function Paginator({
                 Page {page} of {totalPages}
             </span>
             <div className="flex gap-1">
-                <Link
-                    href={queryString(page - 1)}
+                <Link                    
+                    href={
+                        page <= 1
+                            ? "#"
+                            : queryString(page - 1)
+                    }
                     className={
                         `px-3 py-1 rounded ${
                             page <= 1
@@ -68,7 +73,11 @@ export function Paginator({
                 ))}
 
                 <Link
-                    href={queryString(page + 1)}
+                    href={
+                        page >= totalPages
+                        ? "#"
+                        : queryString(page + 1)
+                    }
                     className={
                         `px-3 py-1 rounded ${
                             page >= totalPages
