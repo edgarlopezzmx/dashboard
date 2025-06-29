@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { eventSchema } from "@/lib/validations/eventSchema";
 
 export async function POST(
     request: Request,
@@ -12,6 +13,17 @@ export async function POST(
         return NextResponse.json(
             { error: "Project ID is required" },
             { status: 400 }
+        );
+    }
+
+    const project = await prisma.project.findUnique({
+        where: { id },
+    });
+
+    if (!project) {
+        return NextResponse.json(
+            { error: "Project not found" },
+            { status: 404 }
         );
     }
     
@@ -27,21 +39,25 @@ export async function POST(
         );
     }
 
-    const body = raw as { type: string; payload: unknown };
-
-    if (!body.type || !body.payload) {
+    const parsed = eventSchema.safeParse(raw);
+    
+    if (!parsed.success) {
+        console.error("Validation error:", parsed.error);
         return NextResponse.json(
-            { error: "Type and payload are required" },
+            { error: "Invalid event data" , details: parsed.error.flatten() },
             { status: 400 }
         );
     }
+
+    const { type, payload } = parsed.data;
+
 
     try {
         const event = await prisma.event.create({
             data: {
                 projectId: id,
-                type: body.type,
-                payload: body.payload,
+                type: type,
+                payload: payload,
             },
         });
 
