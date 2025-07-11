@@ -16,9 +16,9 @@ export async function POST(
             { status: 400 }
         );
     }
-
+    const projectId = Number(id);
     const project = await prisma.project.findUnique({
-        where: { id },
+        where: { id: projectId },
     });
 
     if (!project) {
@@ -55,13 +55,13 @@ export async function POST(
     try {
         const event = await prisma.event.create({
             data: {
-                projectId: id,
+                projectId: projectId,
                 type: type,
                 payload: payload as Prisma.InputJsonValue,
             },
         });
 
-        revalidatePath(`/dashboard/projects/${id}`);
+        revalidatePath(`/dashboard/projects/${projectId}`);
         return NextResponse.json(event, { status: 201 });
     } catch (error) {
         console.error("Error creating event:", error);

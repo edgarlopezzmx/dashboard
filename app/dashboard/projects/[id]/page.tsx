@@ -14,12 +14,13 @@ export default async function ProjectDetailPage({
     searchParams?: Promise<{ page?: string }>;
 }) {
     const { id } = await params;
+    const projectId = Number(id);
     const { page = '1' } =  await searchParams || {};
     const pageNumber = parseInt(page, 10);
     const baseUrl = `/dashboard/projects/${id}`;    
     
     const project = await prisma.project.findUnique({
-        where: { id: id },
+        where: { id: projectId },
     });
 
     if (!project) {
@@ -27,7 +28,7 @@ export default async function ProjectDetailPage({
     }
 
     const {events, totalPages}  = await getEvents({
-        projectId: id,
+        projectId: projectId,
         sortBy: 'createdAt',
         order: 'desc',
         query: '',

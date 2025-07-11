@@ -5,7 +5,7 @@ import { z } from "zod";
 export const eventSchema = z.object({
     type: z.string().min(1, "Type is required"),
     payload: z.record(z.unknown()),
-    projectId: z.string().uuid("Invalid project ID format").optional(),
+    projectId: z.number().int().positive("Project ID must be a positive integer"),
     createdAt: z.date().optional(),
 });
 

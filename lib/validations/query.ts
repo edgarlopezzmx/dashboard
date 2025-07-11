@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const projectQuerySchema = z.object({
-    projectId: z.string().uuid().optional(),
+    projectId: z.number().int().positive('Project ID must be a positive integer'),
     query: z.string().optional(),
     sortBy: z.enum(['name', 'createdAt'])
         .default('createdAt')

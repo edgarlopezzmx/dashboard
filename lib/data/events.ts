@@ -7,16 +7,17 @@ export async function getEvents({
     query = "",
     page = 1,
 }:{
-    projectId: string;
+    projectId: number;
     sortBy?: string;
     order?: string;
     query?: string;
     page?: number;
 }) {
     const pageSize = 20; // Adjust as needed
+    const idNumber = Number(projectId);
     const events = await prisma.event.findMany({
         where: { 
-            projectId: projectId,
+            projectId: idNumber,
             type: {
                 contains: query,
                 mode: 'insensitive', // Case-insensitive search
@@ -30,7 +31,7 @@ export async function getEvents({
     });
 
     const totalEvents = await prisma.event.count({
-        where: { projectId: projectId }
+        where: { projectId: idNumber }
     });
 
     const totalPages = Math.ceil(totalEvents / pageSize);
