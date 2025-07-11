@@ -37,6 +37,14 @@ run the seeder
 pnpm db:seed
 ```
 
+If needed, you can run a 1000-projects seeder with:
+```bash
+pnpm run seed:1000
+#or directly
+pnpm tsx prisma/seeder3.ts
+```
+
+
 ## Architecture Notes
 
 * Routing: App Router (App/), using Server Components only
@@ -51,7 +59,7 @@ pnpm db:seed
 
 ``` prisma
 model Project {
-  id          String   @id @default(cuid())
+  id          Int @id @default(autoincrement())
   name        String
   description String
   createdAt   DateTime @default(now())
@@ -59,9 +67,9 @@ model Project {
 }
 
 model Event {
-  id        String   @id @default(cuid())
+  id        Int @id @default(autoincrement())
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String
+  projectId Int
   type      String
   payload   Json
   createdAt DateTime @default(now())

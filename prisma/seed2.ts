@@ -5,6 +5,12 @@ import { faker } from '@faker-js/faker';
 const prisma = new PrismaClient();
 
 async function main() {
+    const alreadySeeded = await prisma.project.count();
+    if (alreadySeeded >= 1000) {
+        console.log('Database already seeded with projects. Exiting...');
+        process.exit(0);
+    }
+
     console.log('Seeding 1000 projects...');
     for (let i = 1; i <= 1000; i++) {
         const project = await prisma.project.create({
@@ -40,12 +46,6 @@ async function main() {
         });
     }
     console.log('Seeding completed.');
-}
-
-const alreadySeeded = await prisma.project.count();
-if (alreadySeeded >= 1000) {
-    console.log('Database already seeded with projects. Exiting...');
-    process.exit(0);
 }
 
 main()
