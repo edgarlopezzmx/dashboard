@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
-
-export default function Home() {
-  redirect('/dashboard/projects');
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+    <>
+        <main className="p-4">{children}</main>
+    </>
+    );
 }
