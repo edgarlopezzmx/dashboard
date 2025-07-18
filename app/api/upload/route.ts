@@ -1,9 +1,7 @@
 // app/api/upload/route.ts
 import { NextResponse, NextRequest } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
 import { prisma } from '@/lib/prisma';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
     const formData = await req.formData();
@@ -16,23 +14,32 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    const filePath = `profiles/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const bucket = process.env.STORAGE_BUCKET || 'dash-files';
+    const storage = supabase.storage.from(bucket);
 
-    if (!existsSync(uploadDir)) {
-        await mkdir(uploadDir, { recursive: true });
+    const { error } = await storage.upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: true,
+    });
+    
+    if (error) {
+        console.error('Supabase upload error:', error);
+        return NextResponse.json({ error: 'Failed to upload file to Supabase' }, { status: 500 });
     }
 
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const filePath = path.join(uploadDir, filename);
-
-    await writeFile(filePath, buffer);
+    const {data: publicUrlData} = storage.getPublicUrl(filePath);
 
     await prisma.uploadedFile.create({
         data: {
-            filename: filename,
-            path: `/uploads/${filename}`,
+            filename: file.name,
+            path: publicUrlData.publicUrl,
         },
     });
 
-    return NextResponse.json({ message: 'File uploaded successfully', fileName: filename });
+    return NextResponse.json({ 
+        message: 'File uploaded successfully', 
+        publicUrl: publicUrlData.publicUrl 
+    }, 
+    { status: 200 });
 }

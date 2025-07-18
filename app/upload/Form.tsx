@@ -27,7 +27,7 @@ export default function UploadForm() {
             }
 
             const result = await response.json();
-            alert(`File uploaded successfully: ${result.fileName}`);
+            alert(`File uploaded successfully: ${result.publicUrl}`);
             console.log('File uploaded:', result);
         } catch (error) {
             console.error('Error uploading file:', error);
